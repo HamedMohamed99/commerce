@@ -1,0 +1,70 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Categories:</h4>
+                <div class="d-flex flex-wrap">
+                    {% if categories %}
+                        {% for category in categories.keys %}
+                            <a href="{% url 'categories2' category=category %}" class="btn btn-light btn-sm mb-2 mr-2">{{ category }}</a>
+                        {% endfor %}
+                        <a href="{% url 'categories2' category='other' %}" class="btn btn-light btn-sm mb-2 ml-2">Other</a>
+                    {% else %}
+                        <a>{{ category }}</a> <a href="{% url 'categories' %}" class="btn btn-light btn-sm mb-2 ml-2">X</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                {% if subcategories %}
+                    <h4>Subcategories:</h4>
+                    <div class="d-flex flex-wrap">
+                        {% for subcategory in subcategories %}
+                            <a href="{% url 'categories3' category=category subcategory=subcategory %}" class="btn btn-light btn-sm mb-2 mr-2">{{ subcategory }}</a>
+                        {% endfor %}
+                        <a href="{% url 'categories3' category=category subcategory='other' %}" class="btn btn-light btn-sm mb-2 ml-2">Other</a>
+                    </div>
+                {% elif subcategory %}
+                <h4>Subcategories:</h4>
+                    <a>{{ subcategory }}</a> <a href="{% url 'categories2' category=category %}" class="btn btn-light btn-sm mb-2 ml-2">X</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="container mt-5">
+            <div class="bg-light p-3 mb-4">
+                <h2 class="mb-0">Active Listings</h2>
+            </div>
+            <ul class="list-group">
+                {% for listing in all_active_listing %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center" style="padding-left: 2vw;">
+                        <div>
+                            <h4 style="margin-top: 1vw;">
+                                <a href="{% url 'Listing' id=listing.id %}" class="text-decoration-none">{{ listing.title }}</a>
+                            </h4>
+                            <p class="font-weight-light">{{ listing.description|truncatechars:200 }}</p>
+                            {% if listing.listing_category %}
+                                <a href="{% url 'categories2' category=listing.listing_category %}" class="btn btn-outline-info btn-sm mb-3 mr-1" style="font-size: 0.8rem;" >{{ listing.listing_category }}</a>
+                                {% if listing.sub_category %}
+                                <a style="position: absolute; color: #07739d;" >></a>
+                                <a href="{% url 'categories3' category=listing.listing_category  subcategory=listing.sub_category %}" class="btn btn-info btn-sm mb-3 ml-3" style="font-size: 0.6rem;">{{ listing.sub_category }}</a>
+                                {% endif %}
+                            {% endif %}
+    
+                            <div style="padding-left: 1vw;">
+                                <p><strong>Current Price</strong> ${{ listing.current_bid }}</p>
+                                <p class="font-weight-light" style="font-size: 0.8rem;">Created {{ listing.time }}</p>
+                            </div>
+                        </div>
+                        {% if listing.image %}
+                            <img src="{{ listing.image }}" alt="Listing Image" width="200">
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+                {% if not all_active_listing %}
+                    <a class="ml-5">No Active Listings Found ...</a>
+                {% endif %}
+        </div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="border p-4 rounded">
+        <h2 class="mb-4">Create Listing</h2>
+
+        {% if message %}
+            <div class="alert alert-info">{{ message }}</div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input type="text" class="form-control" id="title" name="title">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea class="form-control" id="description" name="description" rows="5"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="bid">Starting Bid:</label>
+                <input type="number" step="any" class="form-control" id="bid" name="bid">
+            </div>
+
+            <div class="form-group">
+                <label for="image">Image URL:</label>
+                <input type="text" class="form-control" id="image" name="image">
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select class="form-control" id="categorySelect" name="categorySelect">
+                    <option selected disabled>Select Category</option>
+                    {% for category in categories.keys %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subcategory">Subcategory:</label>
+                <select class="form-control" id="subcategorySelect" name="subcategorySelect" disabled></select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+    <script>
+        const categorySelect = document.getElementById("categorySelect");
+        const subcategorySelect = document.getElementById("subcategorySelect");
+        const categ = {{ categories|safe }};
+
+        categorySelect.addEventListener("change", function () {
+            const category = categorySelect.value;
+            if (category === "other") {
+                subcategorySelect.setAttribute("disabled", '');
+                subcategorySelect.innerHTML = "";
+            } else {
+                const subcategories = categ[category];
+
+                subcategorySelect.innerHTML = '<option selected disabled>Select</option>';
+                for (const subcategory of subcategories) {
+                    const option = document.createElement("option");
+                    option.textContent = subcategory;
+                    option.value = subcategory;
+                    subcategorySelect.appendChild(option);
+                }
+
+                const option = document.createElement("option");
+                option.textContent = "Other";
+                option.value = "other";
+                subcategorySelect.appendChild(option);
+
+                subcategorySelect.removeAttribute("disabled");
+            }
+        });
+    </script>
+{% endblock %}
